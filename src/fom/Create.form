@@ -57,7 +57,7 @@
                                   <Component id="Password" max="32767" attributes="0"/>
                                   <Component id="Password1" min="-2" pref="460" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jLabel3" alignment="0" min="-2" pref="78" max="-2" attributes="0"/>
+                              <Component id="jLabel3" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
@@ -109,7 +109,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="18" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Comfig"/>
+        <Property name="text" type="java.lang.String" value="Confirm"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
