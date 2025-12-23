@@ -1,7 +1,7 @@
 package Login;
 
-
 import Login.DBConnection;
+import Login.Login;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;      
 import java.sql.PreparedStatement; 
@@ -13,194 +13,211 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel; 
 
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 /**
  *
  * @author Ratana
  */
 public class FromMain extends javax.swing.JFrame {
+    private final String username; // REMOVE "= null" initialization
    
-  public FromMain(String user) {
-    initComponents();
-    this.username = user;
-    showDate();
-    showTime();
-    loadBookingHistory(); 
-}
+    public FromMain(String user) {
+        initComponents();
+        this.username = user;
+        showDate();
+        showTime();
+        loadBookingHistory();
+        setTitle("Bus Booking System - Welcome " + username);
+        setLocationRelativeTo(null);
+    }
 
     public void showDate() {
-    Date d = new Date();
-    SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy");
-    String dat = s.format(d);
-    date.setText(dat);
-}
-
-public void showTime() {
-    new Timer(1000, (ActionEvent ae) -> {
         Date d = new Date();
-        SimpleDateFormat s =
-                new SimpleDateFormat("HH:mm:ss");
-        String tim = s.format(d);
-        time.setText(tim);
-      
-
-    } // 1 second
-    ).start();
-
-
-}
-/**
- * Load user's booking history from database
- */
-private void loadBookingHistory() {
-    Connection con = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    
-    try {
-        con = DBConnection.getConnection();
-        
-        if (con == null) {
-            System.out.println("Cannot load history - no connection");
-            return;
-        }
-        
-        String sql = "SELECT * FROM bookings WHERE username=? ORDER BY booking_time DESC";
-        pst = con.prepareStatement(sql);
-        pst.setString(1, username);
-        rs = pst.executeQuery();
-        
-        DefaultTableModel model = (DefaultTableModel) TableHistory.getModel();
-        model.setRowCount(0); // Clear table
-        
-        while (rs.next()) {
-            Object[] row = {
-                rs.getString("username"),
-                rs.getString("phone_number"),
-                rs.getString("location_from"),
-                rs.getString("location_to"),
-                rs.getDate("departure_date"),
-                rs.getDate("return_date"),
-                "$" + String.format("%.2f", rs.getDouble("money")),
-                rs.getString("bank"),
-                new SimpleDateFormat("dd-MM-yyyy HH:mm").format(rs.getTimestamp("booking_time"))
-            };
-            model.addRow(row);
-        }
-        
-        System.out.println("✓ Booking history loaded for: " + username);
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (rs != null) rs.close();
-            if (pst != null) pst.close();
-            if (con != null) con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy");
+        String dat = s.format(d);
+        date.setText(dat);
     }
-}
 
-/**
- * Get user's phone number
- */
-private String getUserPhone() {
-    Connection con = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String phone = "";
-    
-    try {
-        con = DBConnection.getConnection();
-        if (con == null) return "";
-        
-        String sql = "SELECT phone FROM users WHERE username=?";
-        pst = con.prepareStatement(sql);
-        pst.setString(1,username);
-        rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            phone = rs.getString("phone");
-        }
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            if (rs != null) rs.close();
-            if (pst != null) pst.close();
-            if (con != null) con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void showTime() {
+        new Timer(1000, (ActionEvent ae) -> {
+            Date d = new Date();
+            SimpleDateFormat s = new SimpleDateFormat("HH:mm:ss");
+            String tim = s.format(d);
+            time.setText(tim);
+        }).start();
     }
     
-    return phone;
-}
-
-/**
- * Save booking to database
- */
-private boolean saveBooking(String locationFrom, String locationTo, 
-                             Date departureDate, Date returnDate, 
-                             double money, String bank) {
-    Connection con = null;
-    PreparedStatement pst = null;
-    boolean success = false;
-    
-    try {
-        con = DBConnection.getConnection();
+    /**
+     * Load user's booking history from database
+     */
+    private void loadBookingHistory() {
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "Database connection failed");
-            return false;
-        }
-        
-        String sql = "INSERT INTO bookings (username, phone_number, location_from, " +
-                    "location_to, departure_date, return_date, money, bank) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        pst = con.prepareStatement(sql);
-        pst.setString(1, username);
-        pst.setString(2, getUserPhone());
-        pst.setString(3, locationFrom);
-        pst.setString(4, locationTo);
-        pst.setDate(5, new java.sql.Date(departureDate.getTime()));
-        pst.setDate(6, returnDate != null ? new java.sql.Date(returnDate.getTime()) : null);
-        pst.setDouble(7, money);
-        pst.setString(8, bank);
-        
-        int result = pst.executeUpdate();
-        
-        if (result > 0) {
-            success = true;
-            System.out.println("✓ Booking saved!");
-        }
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Failed to save: " + e.getMessage());
-    } finally {
         try {
-            if (pst != null) pst.close();
-            if (con != null) con.close();
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed!");
+                return;
+            }
+            
+            String sql = "SELECT * FROM bookings WHERE username=? ORDER BY booking_time DESC";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            rs = pst.executeQuery();
+            
+            DefaultTableModel model = (DefaultTableModel) TableHistory.getModel();
+            model.setRowCount(0); // Clear table
+            
+            int count = 0;
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("username"),
+                    rs.getString("phone_number"),
+                    rs.getString("location_from"),
+                    rs.getString("location_to"),
+                    rs.getDate("departure_date"),
+                    rs.getDate("return_date"),
+                    "$" + String.format("%.2f", rs.getDouble("money")),
+                    rs.getString("bank"),
+                    new SimpleDateFormat("dd-MM-yyyy HH:mm").format(rs.getTimestamp("booking_time"))
+                };
+                model.addRow(row);
+                count++;
+            }
+            
+            if (count == 0) {
+                // Don't show message - just empty table is fine
+            }
+            
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading history: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    /**
+     * Get user's phone number
+     */
+    private String getUserPhone() {
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String phone = "";
+        
+        try {
+            con = DBConnection.getConnection();
+            if (con == null) return "";
+            
+            String sql = "SELECT phone FROM users WHERE username=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                phone = rs.getString("phone");
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return phone;
+    }
+
+    /**
+     * Save booking to database
+     */
+    private boolean saveBooking(String locationFrom, String locationTo, 
+                                 Date departureDate, Date returnDate, 
+                                 double money, String bank) {
+        Connection con = null;
+        PreparedStatement pst = null;
+        boolean success = false;
+        
+        try {
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed");
+                return false;
+            }
+            
+            String phone = getUserPhone();
+            if (phone.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Could not find your phone number. Please update your profile.");
+                return false;
+            }
+            
+            String sql = "INSERT INTO bookings (username, phone_number, location_from, " +
+                        "location_to, departure_date, return_date, money, bank) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, phone);
+            pst.setString(3, locationFrom);
+            pst.setString(4, locationTo);
+            pst.setDate(5, new java.sql.Date(departureDate.getTime()));
+            pst.setDate(6, returnDate != null ? new java.sql.Date(returnDate.getTime()) : null);
+            pst.setDouble(7, money);
+            pst.setString(8, bank);
+            
+            int result = pst.executeUpdate();
+            
+            if (result > 0) {
+                success = true;
+                JOptionPane.showMessageDialog(this, "Booking saved successfully!");
+                // Clear form after successful booking
+                clearBookingForm();
+                // Refresh history
+                loadBookingHistory();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to save booking: " + e.getMessage());
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return success;
+    }
     
-    return success;
-}
+    /**
+     * Clear booking form fields
+     */
+    private void clearBookingForm() {
+        LocationFrom.setSelectedIndex(0);
+        LocationTo.setSelectedIndex(0);
+        DepartureDate.setDate(null);
+        ReturnDate.setDate(null);
+    }
  
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
@@ -246,6 +263,11 @@ private boolean saveBooking(String locationFrom, String locationTo,
         Logo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -629,88 +651,116 @@ private boolean saveBooking(String locationFrom, String locationTo,
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void LaHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaHomeMouseClicked
+    private void LaHomeMouseClicked(java.awt.event.MouseEvent evt) {                                    
         Maintb.setSelectedIndex(0);
-    }//GEN-LAST:event_LaHomeMouseClicked
+    }                                   
 
-    private void LaTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaTicketMouseClicked
+    private void LaTicketMouseClicked(java.awt.event.MouseEvent evt) {                                      
         Maintb.setSelectedIndex(1);
-    }//GEN-LAST:event_LaTicketMouseClicked
+    }                                     
 
-    private void LaExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaExitMouseClicked
-         new Login().setVisible(true);
-       this.dispose();
-    }//GEN-LAST:event_LaExitMouseClicked
+    private void LaExitMouseClicked(java.awt.event.MouseEvent evt) {                                    
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to logout?", 
+            "Confirm Logout", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            new Login().setVisible(true);
+            this.dispose();
+        }
+    }                                   
 
-    private void LaHistoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaHistoryMouseClicked
-         loadBookingHistory(); 
-         Maintb.setSelectedIndex(2);
-    }//GEN-LAST:event_LaHistoryMouseClicked
+    private void LaHistoryMouseClicked(java.awt.event.MouseEvent evt) {                                       
+        loadBookingHistory(); 
+        Maintb.setSelectedIndex(2);
+    }                                      
 
-    private void BtnPayNowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnPayNowActionPerformed
+    private void BtnPayNowActionPerformed(java.awt.event.ActionEvent evt) {                                          
         String locationFrom = (String) LocationFrom.getSelectedItem();
-    String locationTo = (String) LocationTo.getSelectedItem();
-    Date depDate = DepartureDate.getDate();
-    Date retDate = ReturnDate.getDate();
-    
-    // 1. Validation
-    if (depDate == null) {
-        JOptionPane.showMessageDialog(this, "Please select a departure date");
-        return;
-    }
-    if (locationFrom.equals(locationTo)) {
-        JOptionPane.showMessageDialog(this, "From and To locations cannot be the same!");
-        return;
-    }
-
-    // 2. Payment Selection
-    String[] options = {"ABA Bank ($29)", "Wing Bank ($15)"};
-    int choice = JOptionPane.showOptionDialog(this, 
-            "Select your Payment Method", 
-            "Payment", 
-            JOptionPane.DEFAULT_OPTION, 
-            JOptionPane.INFORMATION_MESSAGE, 
-            null, options, options[0]);
-
-    if (choice == 0) { // ABA Selected
-        double price = 29.0;
-        if(saveBooking(locationFrom, locationTo, depDate, retDate, price, "ABA")){
-            Maintb.setSelectedIndex(3); // Switch to ABA QR Tab (tab4)
-            JOptionPane.showMessageDialog(this, "Please scan the ABA QR Code to finish.");
+        String locationTo = (String) LocationTo.getSelectedItem();
+        Date depDate = DepartureDate.getDate();
+        Date retDate = ReturnDate.getDate();
+        
+        // 1. Validation
+        if (depDate == null) {
+            JOptionPane.showMessageDialog(this, "Please select a departure date", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    } else if (choice == 1) { // Wing Selected
-        double price = 15.0;
-        if(saveBooking(locationFrom, locationTo, depDate, retDate, price, "Wing")){
-            Maintb.setSelectedIndex(4); // Switch to Wing QR Tab (tab5)
-            JOptionPane.showMessageDialog(this, "Please scan the Wing QR Code to finish.");
+        if (locationFrom.equals(locationTo)) {
+            JOptionPane.showMessageDialog(this, "From and To locations cannot be the same!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
-    }
-    }//GEN-LAST:event_BtnPayNowActionPerformed
 
-    private void Back15$ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Back15$ActionPerformed
-       Maintb.setSelectedIndex(1);
-    }//GEN-LAST:event_Back15$ActionPerformed
+        // Check if departure date is in the past
+        Date today = new Date();
+        if (depDate.before(today)) {
+            JOptionPane.showMessageDialog(this, "Departure date cannot be in the past!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Check if return date is before departure date
+        if (retDate != null && retDate.before(depDate)) {
+            JOptionPane.showMessageDialog(this, "Return date must be after departure date!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    private void Back29$ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Back29$ActionPerformed
+        // 2. Payment Selection
+        String[] options = {"ABA Bank ($29)", "Wing Bank ($15)"};
+        int choice = JOptionPane.showOptionDialog(this, 
+                "Select your Payment Method", 
+                "Payment", 
+                JOptionPane.DEFAULT_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, 
+                null, options, options[0]);
+
+        if (choice == 0) { // ABA Selected
+            double price = 29.0;
+            if(saveBooking(locationFrom, locationTo, depDate, retDate, price, "ABA")){
+                Maintb.setSelectedIndex(3); // Switch to ABA QR Tab (tab4)
+                JOptionPane.showMessageDialog(this, "Please scan the ABA QR Code to finish your payment.", "Payment Instructions", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else if (choice == 1) { // Wing Selected
+            double price = 15.0;
+            if(saveBooking(locationFrom, locationTo, depDate, retDate, price, "Wing")){
+                Maintb.setSelectedIndex(4); // Switch to Wing QR Tab (tab5)
+                JOptionPane.showMessageDialog(this, "Please scan the Wing QR Code to finish your payment.", "Payment Instructions", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            // User closed the dialog or clicked cancel
+            JOptionPane.showMessageDialog(this, "Payment selection cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }                                         
+
+    private void Back15$ActionPerformed(java.awt.event.ActionEvent evt) {                                        
         Maintb.setSelectedIndex(1);
-    }//GEN-LAST:event_Back29$ActionPerformed
+        JOptionPane.showMessageDialog(this, "Returning to booking page. Your booking has been saved!", "Information", JOptionPane.INFORMATION_MESSAGE);
+    }                                       
+
+    private void Back29$ActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        Maintb.setSelectedIndex(1);
+        JOptionPane.showMessageDialog(this, "Returning to booking page. Your booking has been saved!", "Information", JOptionPane.INFORMATION_MESSAGE);
+    }                                       
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {                                  
+        // Welcome message when window opens
+        JOptionPane.showMessageDialog(this, "Welcome, " + username + "!", "Welcome", JOptionPane.INFORMATION_MESSAGE);
+    }                                 
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
-  
-
-        
-        
-        
+        java.awt.EventQueue.invokeLater(() -> {
+            // For testing purposes only - remove in production
+            // new FromMain("testuser").setVisible(true);
+        });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JButton Back15$;
     private javax.swing.JButton Back29$;
     private javax.swing.JButton BtnPayNow;
@@ -751,5 +801,5 @@ private boolean saveBooking(String locationFrom, String locationTo,
     private javax.swing.JPanel tb5;
     private javax.swing.JPanel tb6;
     private javax.swing.JLabel time;
-    // End of variables declaration//GEN-END:variables
-    private String username; 
+    // End of variables declaration                   
+}

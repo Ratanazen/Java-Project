@@ -1,20 +1,16 @@
-
 package Login;
 
 import Login.DBConnection;
 import Login.Login;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.sql.*;
+import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
 /**
  *
@@ -22,11 +18,14 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Admin extends javax.swing.JFrame {
 
-   public Admin() {
+    public Admin() {
         initComponents();
         showDate();
         showTime();
         loadAllBookings(); 
+        loadAllUsers();
+        setTitle("Admin Dashboard");
+        setLocationRelativeTo(null);
     }
 
     public void showDate() {
@@ -41,17 +40,30 @@ public class Admin extends javax.swing.JFrame {
         }).start();
     }
 
+    /**
+     * Load all bookings from database
+     */
     private void loadAllBookings() {
-        String sql = "SELECT * FROM bookings ORDER BY booking_time DESC";
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); 
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pst = con.prepareStatement(sql);
-             ResultSet rs = pst.executeQuery()) {
-
-            if (con == null) return;
-
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        try {
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed!");
+                return;
+            }
+            
+            String sql = "SELECT * FROM bookings ORDER BY booking_time DESC";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            
+            DefaultTableModel model = (DefaultTableModel) TableHistory.getModel();
+            model.setRowCount(0); // Clear table
+            
+            int count = 0;
             while (rs.next()) {
                 Object[] row = {
                     rs.getString("username"),
@@ -65,17 +77,155 @@ public class Admin extends javax.swing.JFrame {
                     rs.getDate("return_date")
                 };
                 model.addRow(row);
+                count++;
             }
+            
+            if (count == 0) {
+                // Table is empty - that's okay
+            }
+            
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error loading bookings: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
-}
-
-
+    
+    /**
+     * Load all users for the Ticket User tab
+     */
+    private void loadAllUsers() {
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        try {
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                return;
+            }
+            
+            String sql = "SELECT username, phone, role, created_at FROM users ORDER BY created_at DESC";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            
+            // Clear any existing components in TicketUser panel
+            TicketUser.removeAll();
+            
+            // Create a table to display users
+            JTable userTable = new JTable();
+            DefaultTableModel model = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Username", "Phone", "Role", "Created At"}
+            );
+            userTable.setModel(model);
+            
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("username"),
+                    rs.getString("phone"),
+                    rs.getString("role"),
+                    new SimpleDateFormat("dd-MM-yyyy HH:mm").format(rs.getTimestamp("created_at"))
+                };
+                model.addRow(row);
+            }
+            
+            JScrollPane scrollPane = new JScrollPane(userTable);
+            TicketUser.setLayout(new java.awt.BorderLayout());
+            TicketUser.add(scrollPane, java.awt.BorderLayout.CENTER);
+            TicketUser.revalidate();
+            TicketUser.repaint();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Add admin user
+     */
+    private void addAdminUser() {
+        String username = UsernameAdmin.getText().trim();
+        String password = PasswordAdmin.getText().trim();
+        
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter both username and password");
+            return;
+        }
+        
+        if (password.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Password must be at least 6 characters");
+            return;
+        }
+        
+        Connection con = null;
+        PreparedStatement pst = null;
+        
+        try {
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed!");
+                return;
+            }
+            
+            // Check if username already exists
+            String checkSql = "SELECT username FROM users WHERE username=?";
+            pst = con.prepareStatement(checkSql);
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Username already exists!");
+                return;
+            }
+            rs.close();
+            pst.close();
+            
+            String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'admin')";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            
+            int result = pst.executeUpdate();
+            
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Admin user added successfully!");
+                UsernameAdmin.setText("");
+                PasswordAdmin.setText("");
+                loadAllUsers(); // Refresh user list
+            }
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
   
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
@@ -92,14 +242,25 @@ public class Admin extends javax.swing.JFrame {
         LaExit = new javax.swing.JLabel();
         Maintb = new javax.swing.JTabbedPane();
         HomeAdmin = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         TicketUser = new javax.swing.JPanel();
         HistoryUser = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        InfoUser = new javax.swing.JPanel();
+        TableHistory = new javax.swing.JTable();
+        AddAdmin = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        UsernameAdmin = new javax.swing.JTextField();
+        PasswordAdmin = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -228,15 +389,24 @@ public class Admin extends javax.swing.JFrame {
 
         HomeAdmin.setBackground(new java.awt.Color(204, 204, 204));
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("Welcome to Admin Dashboard");
+
         javax.swing.GroupLayout HomeAdminLayout = new javax.swing.GroupLayout(HomeAdmin);
         HomeAdmin.setLayout(HomeAdminLayout);
         HomeAdminLayout.setHorizontalGroup(
             HomeAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1330, Short.MAX_VALUE)
+            .addGroup(HomeAdminLayout.createSequentialGroup()
+                .addGap(397, 397, 397)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 563, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(370, Short.MAX_VALUE))
         );
         HomeAdminLayout.setVerticalGroup(
             HomeAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 655, Short.MAX_VALUE)
+            .addGroup(HomeAdminLayout.createSequentialGroup()
+                .addGap(195, 195, 195)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(259, Short.MAX_VALUE))
         );
 
         Maintb.addTab("tab1", HomeAdmin);
@@ -248,7 +418,7 @@ public class Admin extends javax.swing.JFrame {
         HistoryUser.setBackground(new java.awt.Color(0, 51, 102));
         HistoryUser.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TableHistory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null, null},
@@ -267,14 +437,46 @@ public class Admin extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TableHistory);
 
         HistoryUser.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 1290, 630));
 
         Maintb.addTab("tab3", HistoryUser);
 
-        InfoUser.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        Maintb.addTab("tab4", InfoUser);
+        AddAdmin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jButton1.setBackground(new java.awt.Color(51, 0, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 2, 18)); // NOI18N
+        jButton1.setText("ADD Admin");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        AddAdmin.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 350, 130, 50));
+
+        UsernameAdmin.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        UsernameAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UsernameAdminActionPerformed(evt);
+            }
+        });
+        AddAdmin.add(UsernameAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 450, 60));
+
+        PasswordAdmin.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        AddAdmin.add(PasswordAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 240, 450, 70));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel3.setText("Username Admin");
+        AddAdmin.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, 230, 30));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel4.setText("Password");
+        AddAdmin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 210, 230, 30));
+
+        Maintb.addTab("tab4", AddAdmin);
 
         jPanel1.add(Maintb, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 100, 1330, 690));
 
@@ -297,30 +499,50 @@ public class Admin extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void LaHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaHomeMouseClicked
+    private void LaHomeMouseClicked(java.awt.event.MouseEvent evt) {                                    
         Maintb.setSelectedIndex(0);
-    }//GEN-LAST:event_LaHomeMouseClicked
+    }                                   
 
-    private void LaTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaTicketMouseClicked
+    private void LaTicketMouseClicked(java.awt.event.MouseEvent evt) {                                      
+        loadAllUsers();
         Maintb.setSelectedIndex(1);
-    }//GEN-LAST:event_LaTicketMouseClicked
+    }                                     
 
-    private void LaExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaExitMouseClicked
-         new Login().setVisible(true);
-         this.dispose();
-    }//GEN-LAST:event_LaExitMouseClicked
+    private void LaExitMouseClicked(java.awt.event.MouseEvent evt) {                                    
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to logout?", 
+            "Confirm Logout", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            new Login().setVisible(true);
+            this.dispose();
+        }
+    }                                   
 
-    private void LaHistoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaHistoryMouseClicked
+    private void LaHistoryMouseClicked(java.awt.event.MouseEvent evt) {                                       
+        loadAllBookings(); 
+        Maintb.setSelectedIndex(2);
+    }                                      
 
-       loadAllBookings(); 
-    Maintb.setSelectedIndex(2);
-    }//GEN-LAST:event_LaHistoryMouseClicked
+    private void LaInfoMouseClicked(java.awt.event.MouseEvent evt) {                                    
+        Maintb.setSelectedIndex(3);
+    }                                   
 
-    private void LaInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LaInfoMouseClicked
-         Maintb.setSelectedIndex(3);
-    }//GEN-LAST:event_LaInfoMouseClicked
+    private void UsernameAdminActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        // TODO add your handling code here:
+    }                                             
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        addAdminUser();
+    }
+    
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {
+        JOptionPane.showMessageDialog(this, "Welcome to Admin Dashboard!", "Admin Panel", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     /**
      * @param args the command line arguments
@@ -331,28 +553,31 @@ public class Admin extends javax.swing.JFrame {
         });
     }
 
-    
-   
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
+    private javax.swing.JPanel AddAdmin;
     private javax.swing.JPanel HistoryUser;
     private javax.swing.JPanel HomeAdmin;
-    private javax.swing.JPanel InfoUser;
     private javax.swing.JLabel LaExit;
     private javax.swing.JLabel LaHistory;
     private javax.swing.JLabel LaHome;
     private javax.swing.JLabel LaInfo;
     private javax.swing.JLabel LaTicket;
     private javax.swing.JTabbedPane Maintb;
+    private javax.swing.JTextField PasswordAdmin;
+    private javax.swing.JTable TableHistory;
     private javax.swing.JPanel TicketUser;
+    private javax.swing.JTextField UsernameAdmin;
     private javax.swing.JLabel date;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel time;
-    // End of variables declaration//GEN-END:variables
-
+    // End of variables declaration                   
+}

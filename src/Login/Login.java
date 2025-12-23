@@ -1,22 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Login;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-
-
-
-
 
 /**
  *
@@ -24,19 +12,17 @@ import java.sql.ResultSet;
  */
 public class Login extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
-
     /**
      * Creates new form CreateAcc
      */
     public Login() {
         initComponents();
+        setTitle("Bus Booking System - Login");
+        setLocationRelativeTo(null);
     }
 
-  
-
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel5 = new javax.swing.JPanel();
@@ -102,19 +88,31 @@ public class Login extends javax.swing.JFrame {
         txtUsername.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txtUsername.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtUsername.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        txtUsername.addActionListener(this::txtUsernameActionPerformed);
+        txtUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtUsernameActionPerformed(evt);
+            }
+        });
         JP1.add(txtUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 130, 320, 54));
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txtPassword.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtPassword.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        txtPassword.addActionListener(this::txtPasswordActionPerformed);
+        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPasswordActionPerformed(evt);
+            }
+        });
         JP1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 240, 320, 54));
 
         jButton1.setBackground(new java.awt.Color(0, 153, 153));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setText("Login");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         JP1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(722, 342, 128, 46));
 
         jLabel2.setText("Don't have an account?");
@@ -164,13 +162,21 @@ public class Login extends javax.swing.JFrame {
         Signin.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         Signin.setForeground(new java.awt.Color(102, 102, 102));
         Signin.setText("Sign In");
-        Signin.addActionListener(this::SigninActionPerformed);
+        Signin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SigninActionPerformed(evt);
+            }
+        });
         JP2.add(Signin, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 400, -1, -1));
 
         Confirmpassword.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         Confirmpassword.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Confirmpassword.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Confirmpassword.addActionListener(this::ConfirmpasswordActionPerformed);
+        Confirmpassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ConfirmpasswordActionPerformed(evt);
+            }
+        });
         JP2.add(Confirmpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 290, 40));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -183,19 +189,31 @@ public class Login extends javax.swing.JFrame {
         Username.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Username.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Username.addActionListener(this::UsernameActionPerformed);
+        Username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UsernameActionPerformed(evt);
+            }
+        });
         JP2.add(Username, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 100, 290, 40));
 
         Phonenumber.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         Phonenumber.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Phonenumber.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Phonenumber.addActionListener(this::PhonenumberActionPerformed);
+        Phonenumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PhonenumberActionPerformed(evt);
+            }
+        });
         JP2.add(Phonenumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 180, 290, 40));
 
         Password.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Password.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Password.addActionListener(this::PasswordActionPerformed);
+        Password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PasswordActionPerformed(evt);
+            }
+        });
         JP2.add(Password, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 260, 290, 40));
 
         jLabel10.setText("__________________________________________________________");
@@ -227,13 +245,21 @@ public class Login extends javax.swing.JFrame {
         jTextField1.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 280, 340, 50));
 
         Resetpassword.setBackground(new java.awt.Color(102, 102, 255));
         Resetpassword.setText("Reset password");
         Resetpassword.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Resetpassword.addActionListener(this::ResetpasswordActionPerformed);
+        Resetpassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ResetpasswordActionPerformed(evt);
+            }
+        });
         jPanel1.add(Resetpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 350, 150, 40));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
@@ -261,253 +287,286 @@ public class Login extends javax.swing.JFrame {
         getContentPane().add(JTSignup, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1000, 590));
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
+    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsernameActionPerformed
+    }                                           
 
-    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtPasswordActionPerformed
+    }                                           
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-               String username = txtUsername.getText().trim();
-    String password = txtPassword.getText().trim();
-    
-    // Validation
-    if (username.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "Please enter username and password", 
-            "Input Required", 
-            JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    
-    Connection con = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    
-    try {
-        con = DBConnection.getConnection(); // ← Using DBConnection class
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        String username = txtUsername.getText().trim();
+        String password = txtPassword.getText().trim();
         
-        if (con == null) {
+        // Validation
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Database connection failed!", 
-                "Connection Error", 
-                JOptionPane.ERROR_MESSAGE);
+                "Please enter username and password", 
+                "Input Required", 
+                JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        String sql = "SELECT username, role FROM users WHERE username=? AND password=?";
-        pst = con.prepareStatement(sql);
-        pst.setString(1, username);
-        pst.setString(2, password);
-
-        rs = pst.executeQuery();
-
-        if (rs.next()) {
-            String role = rs.getString("role");
-            String user = rs.getString("username");
-
-            JOptionPane.showMessageDialog(this, 
-                "Login successful! Welcome " + user, 
-                "Success", 
-                JOptionPane.INFORMATION_MESSAGE);
-
-            if (role.equalsIgnoreCase("admin")) {
-                new Admin().setVisible(true);
-            } else {
-                new FromMain(user).setVisible(true);
+        
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        try {
+            con = DBConnection.getConnection();
+            
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, 
+                    "Database connection failed!", 
+                    "Connection Error", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            this.dispose();
 
-        } else {
-            JOptionPane.showMessageDialog(this, 
-                "Invalid username or password", 
-                "Login Failed", 
-                JOptionPane.ERROR_MESSAGE);
-            txtPassword.setText("");
-        }
+            String sql = "SELECT username, role FROM users WHERE username=? AND password=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, 
-            "Database error: " + e.getMessage(), 
-            "Error", 
-            JOptionPane.ERROR_MESSAGE);
-    } finally {
-        try {
-            if (rs != null) rs.close();
-            if (pst != null) pst.close();
-            if (con != null) con.close();
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                String role = rs.getString("role");
+                String user = rs.getString("username");
+
+                JOptionPane.showMessageDialog(this, 
+                    "Login successful! Welcome " + user, 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                // Redirect based on role
+                if (role != null && role.equalsIgnoreCase("admin")) {
+                    new Admin().setVisible(true);
+                } else {
+                    new FromMain(user).setVisible(true);
+                }
+                this.dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Invalid username or password", 
+                    "Login Failed", 
+                    JOptionPane.ERROR_MESSAGE);
+                txtPassword.setText("");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Database error: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }                                        
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {                                     
         JTSignup.setSelectedIndex(1);
-        
-    }//GEN-LAST:event_jLabel3MouseClicked
+    }                                    
 
-    private void SigninActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SigninActionPerformed
-    String username = Username.getText().trim();
-    String phone = Phonenumber.getText().trim();
-    String password = Password.getText().trim();
-    String confirm = Confirmpassword.getText().trim();
+    private void SigninActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        String username = Username.getText().trim();
+        String phone = Phonenumber.getText().trim();
+        String password = Password.getText().trim();
+        String confirm = Confirmpassword.getText().trim();
 
-    if (username.isEmpty() || phone.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please fill all fields");
-        return;
-    }
-
-    if (!password.equals(confirm)) {
-        JOptionPane.showMessageDialog(this, "Passwords do not match");
-        return;
-    }
-
-    Connection con = null;
-    PreparedStatement pst = null;
-
-    try {
-        con = DBConnection.getConnection(); // ← Changed from getConnection()
-
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "Database connection failed");
+        if (username.isEmpty() || phone.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields");
             return;
         }
 
-        String sql = "INSERT INTO users (username, phone, password, role) VALUES (?, ?, ?, 'user')";
-        pst = con.prepareStatement(sql);
-        pst.setString(1, username);
-        pst.setString(2, phone);
-        pst.setString(3, password);
-
-        pst.executeUpdate();
-
-        JOptionPane.showMessageDialog(this, "Account created successfully!");
-        
-        // Clear fields
-        Username.setText("");
-        Phonenumber.setText("");
-        Password.setText("");
-        Confirmpassword.setText("");
-        
-        JTSignup.setSelectedIndex(0); // back to login
-
-    } catch (SQLException e) {
-        if (e.getMessage().contains("Duplicate entry")) {
-            JOptionPane.showMessageDialog(this, "Username already exists");
-        } else {
-            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage());
+        if (!password.equals(confirm)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match");
+            return;
         }
-    } finally {
+
+        // Validate phone number (basic validation)
+        if (!phone.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Phone number should contain only digits");
+            return;
+        }
+
+        Connection con = null;
+        PreparedStatement pst = null;
+
         try {
-            if (pst != null) pst.close();
-            if (con != null) con.close();
+            con = DBConnection.getConnection();
+
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed");
+                return;
+            }
+
+            // Check if username already exists
+            String checkSql = "SELECT username FROM users WHERE username=?";
+            pst = con.prepareStatement(checkSql);
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Username already exists");
+                return;
+            }
+            rs.close();
+            pst.close();
+
+            // Insert new user
+            String sql = "INSERT INTO users (username, phone, password, role) VALUES (?, ?, ?, 'user')";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, phone);
+            pst.setString(3, password);
+
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Account created successfully!");
+            
+            // Clear fields
+            Username.setText("");
+            Phonenumber.setText("");
+            Password.setText("");
+            Confirmpassword.setText("");
+            
+            JTSignup.setSelectedIndex(0); // back to login
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("Duplicate entry")) {
+                JOptionPane.showMessageDialog(this, "Username already exists");
+            } else {
+                JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage());
+            }
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
-    }//GEN-LAST:event_SigninActionPerformed
+    }                                      
 
-    private void ConfirmpasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmpasswordActionPerformed
+    private void ConfirmpasswordActionPerformed(java.awt.event.ActionEvent evt) {                                                
         // TODO add your handling code here:
-    }//GEN-LAST:event_ConfirmpasswordActionPerformed
+    }                                               
 
-    private void UsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsernameActionPerformed
+    private void UsernameActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
-    }//GEN-LAST:event_UsernameActionPerformed
+    }                                        
 
-    private void PhonenumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PhonenumberActionPerformed
+    private void PhonenumberActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-    }//GEN-LAST:event_PhonenumberActionPerformed
+    }                                           
 
-    private void PasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordActionPerformed
+    private void PasswordActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
-    }//GEN-LAST:event_PasswordActionPerformed
+    }                                        
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }                                           
 
-    private void ResetpasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResetpasswordActionPerformed
+    private void ResetpasswordActionPerformed(java.awt.event.ActionEvent evt) {                                              
         String username = jTextField1.getText().trim();
 
-    if (username.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Enter username");
-        return;
-    }
-
-    String newPassword = JOptionPane.showInputDialog(this, "Enter new password");
-
-    if (newPassword == null || newPassword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Password cannot be empty");
-        return;
-    }
-
-    Connection con = null;
-    PreparedStatement pst = null;
-
-    try {
-        con = DBConnection.getConnection(); // ← Changed
-
-        if (con == null) {
-            JOptionPane.showMessageDialog(this, "Database connection failed");
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Enter username");
             return;
         }
 
-        String sql = "UPDATE users SET password=? WHERE username=?";
-        pst = con.prepareStatement(sql);
-        pst.setString(1, newPassword);
-        pst.setString(2, username);
+        String newPassword = JOptionPane.showInputDialog(this, "Enter new password");
 
-        int result = pst.executeUpdate();
-
-        if (result > 0) {
-            JOptionPane.showMessageDialog(this, "Password reset successful!");
-            jTextField1.setText("");
-            JTSignup.setSelectedIndex(0);
-        } else {
-            JOptionPane.showMessageDialog(this, "Username not found");
+        if (newPassword == null || newPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password cannot be empty");
+            return;
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
+        Connection con = null;
+        PreparedStatement pst = null;
+
         try {
-            if (pst != null) pst.close();
-            if (con != null) con.close();
+            con = DBConnection.getConnection();
+
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed");
+                return;
+            }
+
+            // First check if user exists
+            String checkSql = "SELECT username FROM users WHERE username=?";
+            pst = con.prepareStatement(checkSql);
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+            
+            if (!rs.next()) {
+                JOptionPane.showMessageDialog(this, "Username not found");
+                return;
+            }
+            rs.close();
+            pst.close();
+
+            // Update password
+            String sql = "UPDATE users SET password=? WHERE username=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, newPassword);
+            pst.setString(2, username);
+
+            int result = pst.executeUpdate();
+
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Password reset successful!");
+                jTextField1.setText("");
+                JTSignup.setSelectedIndex(0);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
-    
-    }//GEN-LAST:event_ResetpasswordActionPerformed
+    }                                             
 
-    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
+    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {                                      
         JTSignup.setSelectedIndex(2);
-    }//GEN-LAST:event_jLabel12MouseClicked
+    }                                     
 
-    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
-       JTSignup.setSelectedIndex(0);
-    }//GEN-LAST:event_jLabel15MouseClicked
+    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {                                      
+        JTSignup.setSelectedIndex(0);
+    }                                     
 
-    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
-       JTSignup.setSelectedIndex(0);
-    }//GEN-LAST:event_jLabel16MouseClicked
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {                                      
+        JTSignup.setSelectedIndex(0);
+    }                                     
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-       
-        java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
+        });
     }
  
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JTextField Confirmpassword;
     private javax.swing.JPanel JP1;
     private javax.swing.JPanel JP2;
@@ -539,5 +598,5 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtUsername;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
